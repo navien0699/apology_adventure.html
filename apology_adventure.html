@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title> Apology Adventure</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #F3F3F3;
+            color: #333;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            transition: transform 0.5s ease-in-out;
+            position: relative;
+        }
+        h1 {
+            color: #c673c9;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .apology {
+            color: rgb(255, 0, 140);
+            display: none;
+        }
+        #ascii-art {
+            font-family: monospace;
+            white-space: pre;
+            cursor: pointer;
+            transition: transform 0.5s ease-in-out;
+            color: #007bff; 
+        }
+        #ascii-art:hover {
+            transform: scale(1.1);
+        }
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://slidechef.net/wp-content/uploads/2022/11/BTS-Background.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .show-background {
+            opacity: 1;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .show-popup {
+            display: block;
+        }
+        .sorry-button-container {
+            float: right; /* Align the button container to the right */
+        }
+        button#sorryButton {
+            background-color: red; /* Change button color to red */
+            color: white;
+        }
+        button#sorryButton:hover {
+            background-color: darkred; /* Darken color on hover */
+        }
+        button {
+            border: none;
+            border-radius: 30px;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease-in-out;
+            font-size: 16px;
+            outline: none;
+        }
+        button:hover {
+            box-shadow: 0 0 20px rgba(198, 94, 166, 0.5);
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <h1>Navien is requesting for apology!</h1> <!-- Updated heading -->
+        <p>Please Click the BTS Ascii Art to start the game</p>
+
+        <pre id="ascii-art" onclick="startGame()">
+⠀
+ _______  ___________  ________  
+|   _  "\("     _   ")/"       ) 
+(. |_)  :))__/  \\__/(:   \___/  
+|:     \/    \\_ /    \___  \    
+(|  _  \\    |.  |     __/  \\   
+|: |_)  :)   \:  |    /" \   :)  
+(_______/     \__|   (_______/   
+                                 
+
+        
+</pre>
+
+        <div class="question" id="question1" style="display: none;">
+            <p>Please play the Game once</p>
+            <p>Question 1: Who is the leader of BTS?</p>
+            <button onclick="checkAnswer('RM', 1)">RM</button>
+            <button onclick="checkAnswer('Jin', 1)">Jin</button>
+            <button onclick="checkAnswer('Jimin', 1)">Jimin</button>
+            <button onclick="checkAnswer('V', 1)">V</button>
+        </div>
+
+        <div class="question" id="question2" style="display: none;">
+            <p>Question 2: What is the BTS fandom called?</p>
+            <button onclick="checkAnswer('ARMY', 2)">ARMY</button>
+            <button onclick="checkAnswer('BLINK', 2)">BLINK</button>
+            <button onclick="checkAnswer('ONCE', 2)">ONCE</button>
+            <button onclick="checkAnswer('MOA', 2)">MOA</button>
+        </div>
+
+        <div class="question" id="question3" style="display: none;">
+            <p>Question 3: What is the name of BTS's debut song?</p>
+            <button onclick="checkAnswer('No More Dream', 3)">No More Dream</button>
+            <button onclick="checkAnswer('Boy In Luv', 3)">Boy In Luv</button>
+            <button onclick="checkAnswer('I Need U', 3)">I Need U</button>
+            <button onclick="checkAnswer('Blood Sweat & Tears', 3)">Blood Sweat & Tears</button>
+        </div>
+
+        <div class="apology" id="apology1">I'm </div>
+        <div class="apology" id="apology2">really </div>
+        <div class="apology" id="apology3">sorry </div>
+        
+        <div class="sorry-button-container"> <!-- Container for the Sorry button -->
+            <button id="sorryButton" onclick="displayAllSorries()">Sorry</button>
+        </div>
+    </div>
+
+    <div id="popup" class="popup">
+        <p>Im Sorry Dharsh plz Manichidu !!</p>
+    </div>
+
+    <script>
+        var score = 0;
+        var sorryTranslations = [
+            { message: "미안합니다", translation: "I'm sorry (Korean)" },
+            { message: "ごめんなさい", translation: "I'm sorry (Japanese)" },
+            { message: "对不起", translation: "I'm sorry (Chinese)" },
+            { message: "Perdón", translation: "I'm sorry (Spanish)" },
+            { message: "Je suis désolé", translation: "I'm sorry (French)" },
+            { message: "Entschuldigung", translation: "I'm sorry (German)" }
+        ];
+        var currentTranslationIndex = 0;
+
+        function startGame() {
+            document.querySelector('.background').classList.add('show-background');
+            document.getElementById('ascii-art').style.display = 'none';
+            document.getElementById('question1').style.display = 'block';
+        }
+
+        function checkAnswer(answer, questionNumber) {
+            if (questionNumber === 1 && answer === 'RM') {
+                document.getElementById('apology1').style.display = 'inline';
+                score++;
+                document.getElementById('question1').style.display = 'none';
+                document.getElementById('question2').style.display = 'block';
+            } else if (questionNumber === 2 && answer === 'ARMY') {
+                document.getElementById('apology2').style.display = 'inline';
+                score++;
+                document.getElementById('question2').style.display = 'none';
+                document.getElementById('question3').style.display = 'block';
+            } else if (questionNumber === 3 && answer === 'No More Dream') {
+                document.getElementById('apology3').style.display = 'inline';
+                score++;
+            }
+            if (score === 3) {
+                document.getElementById('apology3').style.display = 'inline';
+                document.getElementById('sorryButton').disabled = false;
+                setTimeout(function() {
+                    document.getElementById('popup').classList.add('show-popup');
+                }, 500); // Display final message in popup with transition delay
+            }
+        }
+
+        function displayAllSorries() {
+            var allSorries = '';
+            sorryTranslations.forEach(function(sorry) {
+                allSorries += sorry.message + ' - Translation: ' + sorry.translation + '\n';
+            });
+            alert(allSorries);
+        }
+    </script>
+</body>
+</html>
